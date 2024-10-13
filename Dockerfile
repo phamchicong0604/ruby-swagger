@@ -1,26 +1,27 @@
-# Use an official Ruby runtime as a parent image
-FROM ruby:3.2.2
+FROM ruby:3.2
 
-# Install dependencies
-RUN apt-get update -qq && apt-get install -y nodejs postgresql-client
+# Cài đặt các dependencies
+RUN apt-get update -qq && apt-get install -y nodejs default-mysql-client
+RUN gem install bundler
 
-# Set the working directory in the container
+# Thiết lập thư mục làm việc
 WORKDIR /ruby-swagger
 
-# Add the Gemfile and Gemfile.lock from your app
+# Sao chép Gemfile và Gemfile.lock vào container
 COPY Gemfile /ruby-swagger/Gemfile
-COPY Gemfile.lock /ruby-swagger/Gemfile.lock
+# COPY Gemfile.lock /ruby-swagger/Gemfile.lock
 
-# Install gems
+# Cài đặt các gem
 RUN bundle install
 
-# Add the rest of your app's code
+# Sao chép toàn bộ ứng dụng vào container
 COPY . /ruby-swagger
 
-# Add a script to be executed every time the container starts
-COPY entrypoint.sh /usr/bin/
-RUN chmod +x /usr/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+# Thêm một script để chạy khi container khởi động
+# COPY entrypoint.sh /usr/bin/
+# RUN chmod +x /usr/bin/entrypoint.sh
+# ENTRYPOINT ["entrypoint.sh"]
 
-# Configure the main process to run when running the image
+EXPOSE 3000
+
 CMD ["rails", "server", "-b", "0.0.0.0"]
