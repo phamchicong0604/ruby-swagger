@@ -16,7 +16,7 @@ services:
     build: .  # Build image từ Dockerfile trong thư mục hiện tại
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"  # Lệnh để chạy Rails server
     volumes:
-      - .:/ror-swagger  # Mount thư mục hiện tại vào /ror-swagger trong container
+      - .:/ruby-swagger  # Mount thư mục hiện tại vào /ruby-swagger trong container
     ports:
       - "3000:3000"  # Map cổng 3000 của host với cổng 3000 của container
     environment:  # Thiết lập các biến môi trường cho Rails
