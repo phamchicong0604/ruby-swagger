@@ -1,0 +1,32 @@
+version: '3'  # Chỉ định phiên bản của Docker Compose
+
+services:
+  db:  # Định nghĩa service cho cơ sở dữ liệu
+    platform: linux/x86_64  # Chỉ định nền tảng để đảm bảo tương thích với các máy M1
+    image: mysql:8.0  # Sử dụng image MySQL phiên bản 8.0
+    environment:  # Thiết lập các biến môi trường cho MySQL
+      TZ: Asia/Tokyo  # Đặt múi giờ
+      MYSQL_ROOT_PASSWORD: 4JuR*iqctZN2!  # Đặt mật khẩu root cho MySQL
+    ports:
+      - "3309:3306"  # Map cổng 3306 của host với cổng 3306 của container
+    volumes:
+      - mysql_data:/var/lib/mysql  # Lưu trữ dữ liệu MySQL vào volume có tên mysql_data
+
+  web:  # Định nghĩa service cho ứng dụng Rails
+    build: .  # Build image từ Dockerfile trong thư mục hiện tại
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"  # Lệnh để chạy Rails server
+    volumes:
+      - .:/ror-swagger  # Mount thư mục hiện tại vào /ror-swagger trong container
+    ports:
+      - "3000:3000"  # Map cổng 3000 của host với cổng 3000 của container
+    environment:  # Thiết lập các biến môi trường cho Rails
+      TZ: Asia/Tokyo  # Đặt múi giờ
+      RAILS_ENV: development  # Đặt môi trường Rails là development
+    depends_on:
+      - db  # Đảm bảo service db được khởi động trước service web
+    stdin_open: true  # Giữ STDIN mở, cần thiết cho console của Rails
+    tty: true  # Cấp một TTY, cần thiết cho console của Rails
+
+volumes:
+  mysql_data:  # Định nghĩa volume để lưu trữ dữ liệu MySQL
+    driver: local  # Sử dụng driver local cho volume
